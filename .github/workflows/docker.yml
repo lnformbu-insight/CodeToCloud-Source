@@ -24,4 +24,4 @@ jobs:
         env:
             CR_PAT: ${{secrets.CR_PAT}}
         run: |
-           .\deploy-infrastructure.ps1        
+           .\auto-infra.ps1       
