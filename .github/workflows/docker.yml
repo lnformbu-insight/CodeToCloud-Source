@@ -23,6 +23,6 @@ jobs:
         env:
             CR_PAT: ${{secrets.CR_PAT}}
         run: |
-           .\infrastructure/deploy-infrastructure.ps1 -studentprefix lnt
+           ${GITHUB_WORKSPACE}\infrastructure/deploy-infrastructure.ps1 -studentprefix lnt
 
           
