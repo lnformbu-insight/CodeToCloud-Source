@@ -2,7 +2,7 @@ name: Docker compose Build and Deploy
 on:
   push:
     branches:
-      - deploy-infra
+      - main
     # Publish semver tags as releases.
     tags:
       - v*   
