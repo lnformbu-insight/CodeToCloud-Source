@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "applicationinsights": "^2.3.6"
+  }
+}
