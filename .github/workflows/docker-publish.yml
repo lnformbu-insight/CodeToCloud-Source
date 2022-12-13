@@ -1,11 +1,13 @@
 name: Docker compose Build and Deploy
+
 on:
   push:
     branches:
       - main
     # Publish semver tags as releases.
+
     tags:
-      - v*   
+      - v*  
 
   pull_request:
 jobs:
@@ -14,7 +16,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - name: Log into GitHub Container Registry
         run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin     
 
@@ -33,4 +34,4 @@ jobs:
         env:
             CR_PAT: ${{secrets.CR_PAT}}
         run: |
-           .\infrastructure/auto-infra.ps1 -studentprefix lnt
+          .\infrastructure/deploy-infrastructure.ps1 -studentprefix ltn
