@@ -19,10 +19,10 @@ jobs:
           creds: ${{secrets.AZURE_CREDENTIALS}}
 
       - name: Deploy Infrastructure
-        working-directory: auto-build
         shell: pwsh
         env:
             CR_PAT: ${{secrets.CR_PAT}}
         run: |
-          .\auto.deploy.ps1 -studentprefix lnt
+          .\auto-build/auto.deploy.ps1 -studentprefix lnt
+
           
