@@ -19,7 +19,7 @@ az webapp config container set `
 --multicontainer-config-file ../docker-compose.yml `
 --multicontainer-config-type COMPOSE `
 --name $webappName `
---resource-group $resourcegroupName `
+--resource-group $resourcegroupName 
 
 
 #link the newly created app insights to the webapp with default values
