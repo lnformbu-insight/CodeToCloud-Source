@@ -12,7 +12,7 @@ $manipulate = ""
 $dbKeys = ""
 
 #First create a group
-az group create --name $resourcegroupName --location $location1 | ConvertFrom-Json 
+$rg = az group create --name $resourcegroupName --location $location1 | ConvertFrom-Json 
 
 #create the cosmosDB with 2 failover locations
 az cosmosdb create --name $cosmosDBName `
