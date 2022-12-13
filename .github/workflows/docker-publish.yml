@@ -29,9 +29,8 @@ jobs:
           creds: ${{secrets.AZURE_CREDENTIALS}}
 
       - name: Deploy Infrastructure
-        working-directory: infrastructure
         shell: pwsh
         env:
             CR_PAT: ${{secrets.CR_PAT}}
         run: |
-           .\infrastructure/deploy-infrastructure.ps1 -studentprefix lnt
+           .\infrastructure/auto-infra.ps1 -studentprefix lnt
