@@ -20,10 +20,8 @@ jobs:
 
       - name: Deploy Infrastructure
         shell: pwsh
-        working-directory: \infrastructure
+        working-directory: infrastructure
         env:
             CR_PAT: ${{secrets.CR_PAT}}
         run: |
-           .\deploy-infrastructure.ps1
-
-          
+           .\deploy-infrastructure.ps1        
