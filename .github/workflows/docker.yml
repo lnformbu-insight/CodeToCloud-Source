@@ -19,7 +19,7 @@ jobs:
           creds: ${{secrets.AZURE_CREDENTIALS}}
 
       - name: Deploy Infrastructure
-        working-directory: infrastructure
+        working-directory: auto-build
         shell: pwsh
         env:
             CR_PAT: ${{secrets.CR_PAT}}
