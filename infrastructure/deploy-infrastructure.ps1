@@ -1,8 +1,5 @@
-param
-(
-    [string] $studentprefix = "lnt"
-)
 
+$studentprefix = "lnt"
 $resourcegroupName = "fabmedical-rg-" + $studentsuffix
 $cosmosDBName = "fabmedical-cdb-" + $studentsuffix
 $webappName = "fabmedical-web-" + $studentsuffix
@@ -52,4 +49,3 @@ az webapp config container set `
 
 az extension add --name application-insights
 az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName --application-type web --retention-time 120
-
