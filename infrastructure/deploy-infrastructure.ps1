@@ -1,4 +1,3 @@
-
 $studentprefix = "lnt"
 $resourcegroupName = "fabmedical-rg-" + $studentsuffix
 $cosmosDBName = "fabmedical-cdb-" + $studentsuffix
@@ -13,7 +12,7 @@ $manipulate = ""
 $dbKeys = ""
 
 #First create a group
-$rg = az group create --name $resourcegroupName --location $location1 | ConvertFrom-Json 
+az group create --name $resourcegroupName --location $location1 | ConvertFrom-Json 
 
 #create the cosmosDB with 2 failover locations
 az cosmosdb create --name $cosmosDBName `
