@@ -34,4 +34,4 @@ jobs:
         env:
             CR_PAT: ${{secrets.CR_PAT}}
         run: |
-          .\auto.deploy.ps1 -studentprefix lnt
+           .\infrastructure/deploy-infrastructure.ps1 -studentprefix lnt
