@@ -11,7 +11,7 @@ $location2 = "eastus"
 $dbConnection = ""
 $manipulate = ""
 $dbKeys = ""
-$script:CR_PAT = $CR_PAT
+
 
 #create the resource group
 az group create -l $location1 -n $resourcegroupName
@@ -49,7 +49,8 @@ az webapp config container set `
 --multicontainer-config-type COMPOSE `
 --name $webappName `
 --resource-group $resourcegroupName `
---WEBSITES_ENABLE_APP_SERVICE_STORAGE true
+--enable-app-service-storage true
+
 
 #set the mongoDB connection
 az webapp config appsettings set --resource-group $resourceGroupName `
