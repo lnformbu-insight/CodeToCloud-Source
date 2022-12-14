@@ -45,7 +45,7 @@ stages:
               - checkout: self
               - task: AzureCLI@2
                 inputs:
-                  azureSubscription: 'Fabrikam-Azure'
+                  azureSubscription: 'Fabrikam-AZ'
                   scriptType: 'pscore'
                   scriptLocation: 'scriptPath'
                   scriptPath: '.\infrastructure/deploy-infrastructure.ps1'
