@@ -11,7 +11,6 @@ pool:
 
 stages:
   - stage: DeployProd
-    dependsOn: build
     jobs:
     - deployment: infrastructure
       environment: production
