@@ -1,7 +1,5 @@
-Start-Sleep -Seconds 500
-
 #All  variables for infra build
-$studentsuffix = "ltn"
+$studentsuffix = "lnt"
 $resourcegroupName = "fabmedical-rg-" + $studentsuffix
 $cosmosDBName = "fabmedical-cdb-" + $studentsuffix
 $webappName = "fabmedical-web-" + $studentsuffix
@@ -76,7 +74,7 @@ az monitor log-analytics workspace create --resource-group $resourcegroupName `
 az extension add --name application-insights
 sudo npm install applicationinsights
 $ai = az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName `
-    --workspace "/subscriptions/c074675d-209c-429a-a95e-ea35b822e146/resourceGroups/fabmedical-rg-ltn/providers/Microsoft.OperationalInsights/workspaces/fabmedical-law-ltn" `
+    --workspace "/subscriptions/c074675d-209c-429a-a95e-ea35b822e146/resourceGroups/fabmedical-rg-lnt/providers/Microsoft.OperationalInsights/workspaces/fabmedical-law-lnt" `
     --application-type web | ConvertFrom-Json
 
 $global:aiInstKey = $ai.instrumentationKey
@@ -98,8 +96,3 @@ az webapp config appsettings set --resource-group $resourceGroupName `
     XDT_MicrosoftApplicationInsights_PreemptSdk=disabled `
     WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
 
-#commit the updated app.js
-& .\azinf/gitpp.ps1
-
-#re-deploy the web container to the application
-& .\azinf/deploy-container.ps1
