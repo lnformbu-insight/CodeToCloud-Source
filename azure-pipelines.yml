@@ -49,7 +49,7 @@ stages:
                   azureSubscription: 'Fabrikam-AZ'
                   scriptType: 'pscore'
                   scriptLocation: 'scriptPath'
-                  scriptPath: './infrastructure/auto-infra.ps1'
+                  scriptPath: './infrastructure/deploy-infrastructure.ps1'
                   arguments: 'lnt'
                 env:
                   CR_PAT: $(CR_PAT)
