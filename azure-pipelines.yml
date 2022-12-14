@@ -10,7 +10,7 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-  - stage: Build Images
+  - stage: Build
     jobs:
     - job: 'BuildAndpublish'
       displayName: 'Build and Publish'
@@ -33,7 +33,7 @@ stages:
           action: 'Push services'
           additionalImageTags: '$(Build.BuildNumber)'
 
-  - stage: DeployProd Infra
+  - stage: DeployProd
     dependsOn: build
     jobs:
     - deployment: infrastructure
