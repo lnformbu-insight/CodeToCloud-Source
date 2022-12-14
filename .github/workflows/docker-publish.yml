@@ -3,7 +3,7 @@ name: Docker compose Build and Deploy
 on:
   push:
     branches:
-      - main
+      - '**'
     # Publish semver tags as releases.
 
     tags:

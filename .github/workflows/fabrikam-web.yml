@@ -4,7 +4,7 @@ on:
   push:
     # Publish `main` as Docker `latest` image.
     branches:
-      - main
+      - '**'
     paths:
       - 'content-web/**'
       - '.github/workflows/fabrikam-web.yml'

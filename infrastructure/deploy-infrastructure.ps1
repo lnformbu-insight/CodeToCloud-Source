@@ -36,9 +36,7 @@ $manipulate = $manipulate.Split("""")[1]
 $manipulate = $manipulate.Split("?")
 $dbConnection = $manipulate[0] + "contentdb?" + $manipulate[1]
 
-az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_URL="https://ghcr.io" --name $webappName --resource-group $resourcegroupName 
-az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_USERNAME="notapplicable" --name $webappName --resource-group $resourcegroupName 
-az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_PASSWORD="$env:CR_PAT" --name $webappName --resource-group $resourcegroupName 
+
 
 #Create a Azure Web App with NGINX container
 az webapp create `
@@ -47,6 +45,10 @@ az webapp create `
 --name $webappName `
 --resource-group $resourcegroupName `
 --plan $planName
+
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_URL="https://ghcr.io" --name $webappName --resource-group $resourcegroupName 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_USERNAME="notapplicable" --name $webappName --resource-group $resourcegroupName 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_PASSWORD="$env:CR_PAT" --name $webappName --resource-group $resourcegroupName 
 
 az webapp config container set `
 --docker-registry-server-password $env:CR_PAT `
