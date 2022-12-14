@@ -36,8 +36,9 @@ stages:
   - stage: DeployProd
     dependsOn: build
     jobs:
-    - deployment: infrastructure
+    - deployment: azinf
       environment: production
+      displayName: 'Patience Deploying Infrastructure...'
       strategy:
         runOnce:
           deploy:
