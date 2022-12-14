@@ -1,4 +1,4 @@
-$studentsuffix = "lnt"
+$studentsuffix = "ltn"
 $resourcegroupName = "fabmedical-rg-" + $studentsuffix
 $cosmosDBName = "fabmedical-cdb-" + $studentsuffix
 $webappName = "fabmedical-web-" + $studentsuffix
