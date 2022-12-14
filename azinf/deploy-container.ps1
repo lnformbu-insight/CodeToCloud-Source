@@ -10,7 +10,7 @@ $location2 = "eastus"
 $dbConnection = ""
 $manipulate = ""
 $dbKeys = ""
-$script:CR_PAT = $CR_PAT
+
 
 az webapp config container set `
 az webapp config container set `
@@ -20,4 +20,5 @@ az webapp config container set `
 --multicontainer-config-file ../docker-compose.yml `
 --multicontainer-config-type COMPOSE `
 --name $webappName `
---resource-group $resourcegroupName 
+--resource-group $resourcegroupName `
+--enable-app-service-storage true

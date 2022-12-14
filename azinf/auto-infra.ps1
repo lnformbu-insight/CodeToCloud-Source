@@ -1,9 +1,9 @@
 $studentprefix = "lnt"
-$script:resourcegroupName = "fabmedical-rg-" + $studentsuffix
-$script:webappName = "fabmedical-web-" + $studentsuffix
-$script:workspaceName = "fabmedical-law-" + $studentsuffix
-$script:location1 = "westus3"
-$script:CR_PAT = $CR_PAT
+$resourcegroupName = "fabmedical-rg-" + $studentsuffix
+$webappName = "fabmedical-web-" + $studentsuffix
+$workspaceName = "fabmedical-law-" + $studentsuffix
+$location1 = "westus3"
+$CR_PAT = $CR_PAT
 
 
 
