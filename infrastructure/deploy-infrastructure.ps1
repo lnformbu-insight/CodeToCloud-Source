@@ -13,10 +13,6 @@ $manipulate = ""
 $dbKeys = ""
 
 
-#login to github
-git config --global user.email "lnformbu-insight@insight.com"
-git config --global user.name "Lenon Nformbui"
-
 
 #create the resource group
 az group create -l $location1 -n $resourcegroupName
@@ -65,7 +61,6 @@ az webapp config appsettings set --resource-group $resourceGroupName `
 #populate the database with content fron ghcr.io - fabrikam-init
 docker run -ti --rm -e MONGODB_CONNECTION=$dbConnection ghcr.io/lnformbu-insight/fabrikam-init
 
-
 #================================================================================================================
 
 #Create the following: A log analytics workspace & app insights
@@ -97,16 +92,6 @@ az webapp config appsettings set --resource-group $resourceGroupName `
     XDT_MicrosoftApplicationInsights_PreemptSdk=disabled `
     WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
    
-#================================================================================================================
-#configure the app insights instrumentation key and insert it into app.js
-$insertString = "appInsights.setup(`"" + $aiInstKey + "`");"
-(Get-Content ../content-web/app.js) -Replace "appInsights\.setup\(\`"*\S*\`"*\);", $insertString | Set-Content ../content-web/app.js
- 
-#================================================================================================================
-#commit the updated app.js
-git add ../content-web/app.js
-git commit -m "updated aiInstKey in app.js"
-git push
 #================================================================================================================
 #this will re-deploy the web container to the application
 

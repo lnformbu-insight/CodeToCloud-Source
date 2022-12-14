@@ -1,4 +1,4 @@
-$script:studentprefix = "ltn"
+$script:studentprefix = "lnt"
 $script:resourcegroupName = "fabmedical-rg-" + $studentsuffix
 $script:webappName = "fabmedical-web-" + $studentsuffix
 $script:workspaceName = "fabmedical-law-" + $studentsuffix

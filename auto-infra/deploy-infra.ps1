@@ -1,5 +1,5 @@
 #All  variables for infra build
-$studentsuffix = "ltn"
+$studentsuffix = "lnt"
 $resourcegroupName = "fabmedical-rg-" + $studentsuffix
 $cosmosDBName = "fabmedical-cdb-" + $studentsuffix
 $webappName = "fabmedical-web-" + $studentsuffix
