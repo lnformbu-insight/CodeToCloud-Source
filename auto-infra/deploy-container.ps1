@@ -11,8 +11,7 @@ $dbConnection = ""
 $manipulate = ""
 $dbKeys = ""
 
-
-az webapp config container set `
+#configure the webapp settings
 az webapp config container set `
 --docker-registry-server-password $CR_PAT `
 --docker-registry-server-url https://ghcr.io `

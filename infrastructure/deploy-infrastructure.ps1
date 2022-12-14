@@ -13,7 +13,6 @@ $manipulate = ""
 $dbKeys = ""
 
 
-
 #create the resource group
 az group create -l $location1 -n $resourcegroupName
 
@@ -26,7 +25,7 @@ az cosmosdb create --name $cosmosDBName `
 --kind MongoDB 
 
 
-#create the App Service Plan
+#Create a Azure App Service Plan
 az appservice plan create --name $planName --resource-group $resourcegroupName --sku S1 --is-linux
 
 #get and configure dbConnection string
@@ -37,31 +36,38 @@ $manipulate = $manipulate.Split("""")[1]
 $manipulate = $manipulate.Split("?")
 $dbConnection = $manipulate[0] + "contentdb?" + $manipulate[1]
 
-#create the WebApp with nginx
-az webapp create --resource-group $resourcegroupName `
---plan $planName --name $webappName -i nginx
 
-#configure the webapp settings
-az webapp config container set `
---docker-registry-server-password $CR_PAT `
---docker-registry-server-url https://ghcr.io `
---docker-registry-server-user notapplicable `
---multicontainer-config-file ../docker-compose.yml `
+
+#Create a Azure Web App with NGINX container
+az webapp create `
+--multicontainer-config-file docker-compose.yml `
 --multicontainer-config-type COMPOSE `
 --name $webappName `
 --resource-group $resourcegroupName `
---enable-app-service-storage true
+--plan $planName
 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_URL="https://ghcr.io" --name $webappName --resource-group $resourcegroupName 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_USERNAME="notapplicable" --name $webappName --resource-group $resourcegroupName 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_PASSWORD="$env:CR_PAT" --name $webappName --resource-group $resourcegroupName 
+
+az webapp config container set `
+--docker-registry-server-password $env:CR_PAT `
+--docker-registry-server-url https://ghcr.io `
+--docker-registry-server-user notapplicable `
+--multicontainer-config-file docker-compose.yml `
+--multicontainer-config-type COMPOSE `
+--name $webappName `
+--resource-group $resourcegroupName 
+
+az extension add --name application-insights
+az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName --application-type web --retention-time 120
 
 #set the mongoDB connection
 az webapp config appsettings set --resource-group $resourceGroupName `
 --name $webappName `
 --settings MONGODB_CONNECTION=$dbConnection
 
-#populate the database with content fron ghcr.io - fabrikam-init
-docker run -ti --rm -e MONGODB_CONNECTION=$dbConnection ghcr.io/lnformbu-insight/fabrikam-init
 
-#================================================================================================================
 
 #Create the following: A log analytics workspace & app insights
 az monitor log-analytics workspace create --resource-group $resourcegroupName `
@@ -91,16 +97,4 @@ az webapp config appsettings set --resource-group $resourceGroupName `
     XDT_MicrosoftApplicationInsights_Mode=recommended `
     XDT_MicrosoftApplicationInsights_PreemptSdk=disabled `
     WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
-   
-#================================================================================================================
-#this will re-deploy the web container to the application
 
-az webapp config container set `
---docker-registry-server-password $CR_PAT `
---docker-registry-server-url https://ghcr.io `
---docker-registry-server-user notapplicable `
---multicontainer-config-file ../docker-compose.yml `
---multicontainer-config-type COMPOSE `
---name $webappName `
---resource-group $resourcegroupName `
---enable-app-service-storage true
