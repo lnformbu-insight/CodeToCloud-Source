@@ -11,6 +11,7 @@ $location2 = "eastus"
 $dbConnection = ""
 $manipulate = ""
 $dbKeys = ""
+$script:CR_PAT = $CR_PAT
 
 #create the resource group
 az group create -l $location1 -n $resourcegroupName
