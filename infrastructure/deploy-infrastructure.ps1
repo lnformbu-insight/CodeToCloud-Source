@@ -96,4 +96,8 @@ az webapp config appsettings set --resource-group $resourceGroupName `
     XDT_MicrosoftApplicationInsights_PreemptSdk=disabled `
     WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
 
+#commit the updated app.js
+& .\azinf/gitpp.ps1
 
+#re-deploy the web container to the application
+& .\deploy-container.ps1
