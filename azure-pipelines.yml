@@ -10,7 +10,7 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-  - stage: build
+  - stage: Build Images
     jobs:
     - job: 'BuildAndpublish'
       displayName: 'Build and Publish'
@@ -33,7 +33,7 @@ stages:
           action: 'Push services'
           additionalImageTags: '$(Build.BuildNumber)'
 
-  - stage: DeployProd
+  - stage: DeployProd Infra
     dependsOn: build
     jobs:
     - deployment: infrastructure
@@ -48,7 +48,7 @@ stages:
                   azureSubscription: 'Fabrikam-AZ'
                   scriptType: 'pscore'
                   scriptLocation: 'scriptPath'
-                  scriptPath: './infrastructure/deploy-infrastructure.ps1'
+                  scriptPath: './azinf/auto-infra.ps1'
                   arguments: 'lnt'
                 env:
                   CR_PAT: $(CR_PAT)
