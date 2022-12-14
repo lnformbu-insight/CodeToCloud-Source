@@ -21,7 +21,7 @@ stages:
           containerregistrytype: 'Container Registry'
           dockerRegistryEndpoint: 'GitHub Container Registry'
           dockerComposeFile: '**/docker-compose.yml'
-          additionalDockerComposeFiles: '**/build.docker-compose.yml'
+          additionalDockerComposeFiles: 'build.docker-compose.yml'
           action: 'Build services'
           additionalImageTags: '${Build.BuildNumber}'
       - task: DockerCompose@0
@@ -29,7 +29,7 @@ stages:
           containerregistrytype: 'Container Registry'
           dockerRegistryEndpoint: 'GitHub Container Registry'
           dockerComposeFile: '**/docker-compose.yml'
-          additionalDockerComposeFiles: '**/build.docker-compose.yml'
+          additionalDockerComposeFiles: 'build.docker-compose.yml'
           action: 'Push services'
           additionalImageTags: '${Build.BuildNumber}'
 
@@ -48,7 +48,7 @@ stages:
                   azureSubscription: 'Fabrikam-AZ'
                   scriptType: 'pscore'
                   scriptLocation: 'scriptPath'
-                  scriptPath: '.\infrastructure/deploy-infrastructure.ps1'
+                  scriptPath: './infrastructure/deploy-infrastructure.ps1'
                   arguments: 'lnt'
                 env:
                   CR_PAT: $(CR_PAT)
