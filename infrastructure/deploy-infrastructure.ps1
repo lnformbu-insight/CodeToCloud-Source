@@ -1,5 +1,8 @@
+param
+(
+    [string] $studentsuffix = "lnt"
+)
 #All  variables for infra build
-$studentsuffix = "lnt"
 $resourcegroupName = "fabmedical-rg-" + $studentsuffix
 $cosmosDBName = "fabmedical-cdb-" + $studentsuffix
 $webappName = "fabmedical-web-" + $studentsuffix
@@ -14,19 +17,15 @@ $dbKeys = ""
 
 
 #create the resource group
-az group create -l $location1 -n $resourcegroupName
+$rg = az group create --name $resourcegroupName --location $location1 | ConvertFrom-Json
 
-#create the cosmosDB with 2 failover locations
+#create the cosmosDB with failover locations
 az cosmosdb create --name $cosmosDBName `
 --resource-group $resourcegroupName `
 --locations regionName=$location1 failoverPriority=0 isZoneRedundant=False `
 --locations regionName=$location2 failoverPriority=1 isZoneRedundant=True `
 --enable-multiple-write-locations `
 --kind MongoDB 
-
-
-#Create a Azure App Service Plan
-az appservice plan create --name $planName --resource-group $resourcegroupName --sku S1 --is-linux
 
 #get and configure dbConnection string
 $dbKeys = az cosmosdb keys list -n $cosmosDBName -g $resourcegroupName --type connection-strings `
@@ -37,26 +36,29 @@ $manipulate = $manipulate.Split("?")
 $dbConnection = $manipulate[0] + "contentdb?" + $manipulate[1]
 
 
+# Create an Azure App Service Plan
+az appservice plan create --name $planName --resource-group $resourcegroupName --sku S1 --is-linux
 
-#Create a Azure Web App with NGINX container
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_URL="https://ghcr.io" --name $($webappName) --resource-group $($resourcegroupName) 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_USERNAME="notapplicable" --name $($webappName) --resource-group $($resourcegroupName) 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_PASSWORD="$($env:CR_PAT)" --name $($webappName) --resource-group $($resourcegroupName)
+
+# Create an Azure Web App with NGINX container
 az webapp create `
---multicontainer-config-file docker-compose.yml `
+--multicontainer-config-file ./docker-compose.yml `
 --multicontainer-config-type COMPOSE `
---name $webappName `
---resource-group $resourcegroupName `
---plan $planName
+--resource-group $($resourcegroupName) `
+--plan $($planName) `
+--name $($webappName)
 
-az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_URL="https://ghcr.io" --name $webappName --resource-group $resourcegroupName 
-az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_USERNAME="notapplicable" --name $webappName --resource-group $resourcegroupName 
-az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_PASSWORD="$env:CR_PAT" --name $webappName --resource-group $resourcegroupName 
-
+# Add container properties to Web App to pull from GitHub Container Registry images
 az webapp config container set `
---docker-registry-server-password $env:CR_PAT `
+--docker-registry-server-password $($env:CR_PAT) `
 --docker-registry-server-url https://ghcr.io `
 --docker-registry-server-user notapplicable `
 --multicontainer-config-file docker-compose.yml `
 --multicontainer-config-type COMPOSE `
---name $webappName `
+--name $($webappName) `
 --resource-group $resourcegroupName 
 
 az extension add --name application-insights
