@@ -1,7 +1,6 @@
 FROM node:dubnium-alpine AS base
 RUN apk -U add curl
 WORKDIR /usr/src/app
-EXPOSE 80
 EXPOSE 3001
 ENV MONGODB_CONNECTION=mongodb://mongo:27017/contentdb
 
@@ -18,3 +17,4 @@ COPY . /usr/src/app
 FROM base AS final
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app .
+CMD [ "npm", "start" ]
