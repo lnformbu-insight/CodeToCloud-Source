@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 EXPOSE 80
 ENV MONGODB_CONNECTION=mongodb://mongo:27017/contentdb
 
-FROM nginx:1.23-alpine AS build
+FROM node:current-alpine3.17 AS build
 WORKDIR /usr/src/app
 
 # Install app dependencies
