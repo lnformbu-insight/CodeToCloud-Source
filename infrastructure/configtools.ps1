@@ -15,13 +15,13 @@ $dbKeys = ""
 #create the resource group
 az group create -l $location1 -n $resourcegroupName
 
-#create the cosmosDB with failover locations
+#create the cosmosDB with 2 failover locations
 az cosmosdb create --name $cosmosDBName `
 --resource-group $resourcegroupName `
 --locations regionName=$location1 failoverPriority=0 isZoneRedundant=False `
 --locations regionName=$location2 failoverPriority=1 isZoneRedundant=True `
 --enable-multiple-write-locations `
---kind MongoDB 
+--kind MongoDB `
 
 #get and configure dbConnection string
 $dbKeys = az cosmosdb keys list -n $cosmosDBName -g $resourcegroupName --type connection-strings `
@@ -31,46 +31,44 @@ $manipulate = $manipulate.Split("""")[1]
 $manipulate = $manipulate.Split("?")
 $dbConnection = $manipulate[0] + "contentdb?" + $manipulate[1]
 
-
-# Create an Azure App Service Plan
+#create the App Service Plan
 az appservice plan create --name $planName --resource-group $resourcegroupName --sku S1 --is-linux
 
-# Create an Azure Web App with NGINX container
-az webapp create `
---multicontainer-config-file ./docker-compose.yml `
---multicontainer-config-type COMPOSE `
---resource-group $resourcegroupName `
---plan $planName `
---name $webappName
 
-# Add container properties to Web App to pull from GitHub Container Registry images
+#create the WebApp with nginx
+az webapp create --resource-group $resourcegroupName `
+--plan $planName --name $webappName -i nginx
+
+
+#configure the webapp settings
 az webapp config container set `
---docker-registry-server-password $($env:CR_PAT) `
+--docker-registry-server-password $CR_PAT `
 --docker-registry-server-url https://ghcr.io `
 --docker-registry-server-user notapplicable `
---multicontainer-config-file docker-compose.yml `
+--multicontainer-config-file ../docker-compose.yml `
 --multicontainer-config-type COMPOSE `
 --name $webappName `
---resource-group $resourcegroupName 
-
-az extension add --name application-insights
-az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName --application-type web --retention-time 120
+--resource-group $resourcegroupName `
+--enable-app-service-storage true
 
 #set the mongoDB connection
 az webapp config appsettings set --resource-group $resourceGroupName `
 --name $webappName `
 --settings MONGODB_CONNECTION=$dbConnection
 
+#populate the database with content fron ghcr.io - fabrikam-init
+docker run -ti --rm -e MONGODB_CONNECTION=$dbConnection ghcr.io/lnformbu-insight/fabrikam-init
 
+
+#===============================================================================================================================
 
 #Create the following: A log analytics workspace & app insights
 az monitor log-analytics workspace create --resource-group $resourcegroupName `
     --workspace-name $workspaceName
 
 az extension add --name application-insights
-sudo npm install applicationinsights
 $ai = az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName `
-    --workspace "/subscriptions/c074675d-209c-429a-a95e-ea35b822e146/resourceGroups/fabmedical-rg-lnt/providers/Microsoft.OperationalInsights/workspaces/fabmedical-law-lnt" `
+    --workspace "/subscriptions/c074675d-209c-429a-a95e-ea35b822e146/resourceGroups/fabmedical-rg-ltn/providers/Microsoft.OperationalInsights/workspaces/fabmedical-law-ltn" `
     --application-type web | ConvertFrom-Json
 
 $global:aiInstKey = $ai.instrumentationKey
@@ -92,5 +90,31 @@ az webapp config appsettings set --resource-group $resourceGroupName `
     XDT_MicrosoftApplicationInsights_PreemptSdk=disabled `
     WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
 
-#populate the db
-docker run -ti -e MONGODB_CONNECTION=$dbConnection ghcr.io/lnformbu-insight/fabrikam-init 
+#===============================================================================================================================
+#setting up Application Insights
+
+#configure the app insights instrumentation key and insert it into app.js
+$insertString = "appInsights.setup(`"" + $aiInstKey + "`");"
+(Get-Content ../content-web/app.js) -Replace "appInsights\.setup\(\`"*\S*\`"*\);", $insertString | Set-Content ../content-web/app.js
+
+#commit the updated app.js
+git add . ../content-web/app.js
+git commit -m "added new aiInstKey to app.js"
+git push
+
+#wait 5 minutes to make sure new container has been pushed to github container registry
+
+Start-Sleep -Seconds 210
+
+#===============================================================================================================================
+#this will re-deploy the web container to the application
+
+az webapp config container set `
+--docker-registry-server-password $CR_PAT `
+--docker-registry-server-url https://ghcr.io `
+--docker-registry-server-user notapplicable `
+--multicontainer-config-file ../docker-compose.yml `
+--multicontainer-config-type COMPOSE `
+--name $webappName `
+--resource-group $resourcegroupName `
+--enable-app-service-storage true
