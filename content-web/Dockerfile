@@ -3,7 +3,7 @@ RUN apk -U add curl
 WORKDIR /usr/src/app
 ENV PORT=80
 EXPOSE 80
-ENV CONTENT_API_URL=http://api:3001
+ENV CONTENT_API_URL=https://fabmedical-api-lnt.azurewebsites.net
 
 FROM node:dubnium AS build
 RUN npm install -g @angular/cli@~8.3.4
