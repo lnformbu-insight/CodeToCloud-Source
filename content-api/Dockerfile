@@ -1,4 +1,4 @@
-FROM node:alpine AS base
+FROM nginx:1.23-alpine AS base
 RUN apk -U add curl
 WORKDIR /usr/src/app
 EXPOSE 3001
@@ -17,4 +17,3 @@ COPY . /usr/src/app
 FROM base AS final
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app .
-CMD [ "npm", "start" ]
