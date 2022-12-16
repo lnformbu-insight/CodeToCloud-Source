@@ -1,10 +1,10 @@
 FROM nginx:1.23-alpine AS base
 RUN apk -U add curl
 WORKDIR /usr/src/app
-EXPOSE 3001
+EXPOSE 80
 ENV MONGODB_CONNECTION=mongodb://mongo:27017/contentdb
 
-FROM node:alpine AS build
+FROM nginx:1.23-alpine AS build
 WORKDIR /usr/src/app
 
 # Install app dependencies
