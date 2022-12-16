@@ -57,5 +57,4 @@ az webapp config appsettings set --resource-group $resourceGroupName `
 --name $webappName `
 --settings MONGODB_CONNECTION=$dbConnection
 
-#populate the database with content fron ghcr.io - fabrikam-init
-docker run -ti --rm -e MONGODB_CONNECTION=$dbConnection ghcr.io/lnformbu-insight/fabrikam-init
+
