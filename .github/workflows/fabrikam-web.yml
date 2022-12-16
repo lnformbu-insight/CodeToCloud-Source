@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build image
+      - name: Build image - WEB
         working-directory: content-web
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
