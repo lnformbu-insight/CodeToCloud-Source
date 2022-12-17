@@ -25,7 +25,7 @@ az cosmosdb create --name $cosmosDBName `
 az appservice plan create --name $planName --resource-group $resourcegroupName --sku S1 --is-linux
 
 #create the WebApp with nginx
-az webapp create --resource-group $resourcegroupName --plan $planName --name $webappName -i nginx
+az webapp create --resource-group $resourcegroupName --plan $planName --name $webappName 
 
 #configure the webapp settings
 az webapp config container set `
