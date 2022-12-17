@@ -5,10 +5,6 @@ $workspaceName = "fabmedical-law-" + $studentsuffix
 $location1 = "westus3"
 
 
-#login to github
-git config --global user.email "lnformbu-insight@insight.com"
-git config --global user.name "Lenon Nformbui"
-
 #Create the following:
 #log analytics workspace: fabmedical-law-add / app insights: fabmedical-ai-add
 & .\deploy-infra.ps1

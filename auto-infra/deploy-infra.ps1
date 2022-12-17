@@ -8,7 +8,7 @@ $workspaceName = "fabmedical-law-" + $studentsuffix
 $appInsights = "fabmedical-ai-" + $studentsuffix
 $location1 = "westus3"
 $location2 = "eastus"
-$dbConnection = ""
+$dbConnection = "mongodb://fabmedical-cdb-lnt:OertNdMqlVVl8Kpn6nnwSu9lMGZMjTbqEl1RoqGniDVK9GGt5YLIY40iz0rgEPIu6No6bTk1EGhEACDbSlLINA==@fabmedical-cdb-lnt.mongo.cosmos.azure.com:10255/contentdb?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@fabmedical-cdb-lnt@"
 $manipulate = ""
 $dbKeys = ""
 
@@ -22,19 +22,10 @@ az cosmosdb create --name $cosmosDBName `
 --locations regionName=$location1 failoverPriority=0 isZoneRedundant=False `
 --locations regionName=$location2 failoverPriority=1 isZoneRedundant=True `
 --enable-multiple-write-locations `
---kind MongoDB 
-
+--kind MongoDB
 
 #create the App Service Plan
 az appservice plan create --name $planName --resource-group $resourcegroupName --sku S1 --is-linux
-
-#get and configure dbConnection string
-$dbKeys = az cosmosdb keys list -n $cosmosDBName -g $resourcegroupName --type connection-strings `
-    --query "connectionStrings[?description=='Primary MongoDB Connection String'].connectionString"
-$manipulate = $dbKeys[1]
-$manipulate = $manipulate.Split("""")[1]
-$manipulate = $manipulate.Split("?")
-$dbConnection = $manipulate[0] + "contentdb?" + $manipulate[1]
 
 #create the WebApp with nginx
 az webapp create --resource-group $resourcegroupName `
@@ -53,9 +44,8 @@ az webapp config container set `
 
 
 #set the mongoDB connection
-az webapp config appsettings set --resource-group $resourceGroupName `
---name $webappName `
---settings MONGODB_CONNECTION=$dbConnection
+az webapp config appsettings set -n $webappName -g $resourcegroupName --settings MONGODB_CONNECTION="mongodb://fabmedical-cdb-lnt:OertNdMqlVVl8Kpn6nnwSu9lMGZMjTbqEl1RoqGniDVK9GGt5YLIY40iz0rgEPIu6No6bTk1EGhEACDbSlLINA==@fabmedical-cdb-lnt.mongo.cosmos.azure.com:10255/contentdb?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@fabmedical-cdb-lnt@"
 
-#populate the database with content fron ghcr.io - fabrikam-init
-docker run -ti --rm -e MONGODB_CONNECTION=$dbConnection ghcr.io/lnformbu-insight/fabrikam-init
+#docker run -ti --rm -e MONGODB_CONNECTION=$dbConnection ghcr.io/lnformbu-insight/fabrikam-init
+docker run -ti --rm -e MONGODB_CONNECTION="mongodb://fabmedical-cdb-lnt:OertNdMqlVVl8Kpn6nnwSu9lMGZMjTbqEl1RoqGniDVK9GGt5YLIY40iz0rgEPIu6No6bTk1EGhEACDbSlLINA==@fabmedical-cdb-lnt.mongo.cosmos.azure.com:10255/contentdb?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@fabmedical-cdb-lnt@" ghcr.io/lnformbu-insight/fabrikam-init
+
