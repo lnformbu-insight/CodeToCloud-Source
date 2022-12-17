@@ -11,6 +11,7 @@ $webappName = "fabmedical-web-" + $studentsuffix
 $planName = "fabmedical-plan-" + $studentsuffix
 $workspaceName = "fabmedical-law-" + $studentsuffix
 $appInsights = "fabmedical-ai-" + $studentsuffix
+$workspaceName = "fabmedical-law-" + $studentsuffix
 $location1 = "westus3"
 $location2 = "eastus"
 
@@ -24,6 +25,7 @@ az cosmosdb create --name $cosmosDBName `
 --locations regionName=$location2 failoverPriority=1 isZoneRedundant=True `
 --enable-multiple-write-locations `
 --kind MongoDB 
+--enable-app-service-storage true
 
 # Create an Azure App Service Plan
 az appservice plan create --name $planName --resource-group $resourcegroupName --sku S1 --is-linux
@@ -50,5 +52,19 @@ az webapp config container set `
 --name $($webappName) `
 --resource-group $resourcegroupName 
 
+#Create the following: A log analytics workspace & app insights
+<# 
+Note.
+basic app insights is being deprecated in 2024. The west US 3 region can only support through
+a log analytics workspace.So to implement an app insights that won't be deprecated in a year 
+#>
+az monitor log-analytics workspace create --resource-group $resourcegroupName `
+    --workspace-name $workspaceName
+
 az extension add --name application-insights
-az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName --application-type web --retention-time 120
+$ai = az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName `
+    --workspace "/subscriptions/c074675d-209c-429a-a95e-ea35b822e146/resourceGroups/fabmedical-rg-ltn/providers/Microsoft.OperationalInsights/workspaces/fabmedical-law-ltn" `
+    --application-type web | ConvertFrom-Json
+
+$global:aiInstKey = $ai.instrumentationKey
+$aiConnectionString = $ai.connectionString

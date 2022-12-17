@@ -6,7 +6,6 @@ $workspaceName = "fabmedical-law-" + $studentsuffix
 $appInsights = "fabmedical-ai-" + $studentsuffix
 
 #Create the following: A log analytics workspace & app insights
-
 <# 
 Note.
 basic app insights is being deprecated in 2024. The west US 3 region can only support through
