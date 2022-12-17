@@ -4,22 +4,10 @@ $webappName = "fabmedical-web-" + $studentsuffix
 $workspaceName = "fabmedical-law-" + $studentsuffix
 $appInsights = "fabmedical-ai-" + $studentsuffix
 $location1 = "westus3"
-
-
-
-
-#Create the following: A log analytics workspace & app insights
-az monitor log-analytics workspace create --resource-group $resourcegroupName `
-    --workspace-name $workspaceName
+$location2 = "eastus"
 
 az extension add --name application-insights
-sudo npm install applicationinsights
-$ai = az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName `
-    --workspace "/subscriptions/c074675d-209c-429a-a95e-ea35b822e146/resourceGroups/fabmedical-rg-lnt/providers/Microsoft.OperationalInsights/workspaces/fabmedical-law-lnt" `
-    --application-type web | ConvertFrom-Json
-
-$global:aiInstKey = $ai.instrumentationKey
-$aiConnectionString = $ai.connectionString
+az monitor app-insights component create --app $appInsights --location $location2 --kind web -g $resourcegroupName --application-type web --retention-time 120
 
 #link the newly created app insights to the webapp with default values
 az webapp config appsettings set --resource-group $resourceGroupName `
@@ -36,4 +24,3 @@ az webapp config appsettings set --resource-group $resourceGroupName `
     XDT_MicrosoftApplicationInsights_Mode=recommended `
     XDT_MicrosoftApplicationInsights_PreemptSdk=disabled `
     WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
-   
