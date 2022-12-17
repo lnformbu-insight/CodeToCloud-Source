@@ -27,11 +27,13 @@ az appservice plan create --name $planName --resource-group $resourcegroupName -
 #create the WebApp with nginx
 az webapp create --resource-group $resourcegroupName --plan $planName --name $webappName 
 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_URL="https://ghcr.io" --name $($webappName) --resource-group $($resourcegroupName) 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_USERNAME="notapplicable" --name $($webappName) --resource-group $($resourcegroupName) 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_PASSWORD="$($env:CR_PAT)" --name $($webappName) --resource-group $($resourcegroupName)
+
+
 #configure the webapp settings
 az webapp config container set `
---docker-registry-server-password $CR_PAT `
---docker-registry-server-url https://ghcr.io `
---docker-registry-server-user notapplicable `
 --multicontainer-config-file ../docker-compose.yml `
 --multicontainer-config-type COMPOSE `
 --name $webappName `
@@ -47,7 +49,7 @@ az monitor app-insights component create --app $appInsights --location $location
 <# basic app insights is being deprecated in 2024. The west US 3 region doesn't even support the basic app insights, 
 only ones through a log analytics workspace. So to implement an app insights that won't be deprecated in a year (ish), 
 it was best to use the newer way of doing things.
-
+#>
 az monitor log-analytics workspace create --resource-group $resourcegroupName `
     --workspace-name $workspaceName
 
@@ -58,4 +60,3 @@ $ai = az monitor app-insights component create --app $appInsights --location $lo
 
 $global:aiInstKey = $ai.instrumentationKey
 $aiConnectionString = $ai.connectionString
-#>
