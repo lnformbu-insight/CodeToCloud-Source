@@ -53,16 +53,5 @@ az webapp config container set `
 --resource-group $resourcegroupName 
 
 #Create the following: A log analytics workspace & app insights
-<# 
-Note.
-basic app insights is being deprecated in 2024. The west US 3 region can only support through
-a log analytics workspace.So to implement an app insights that won't be deprecated in a year 
-#>
-az monitor log-analytics workspace create --resource-group $resourcegroupName `
-    --workspace-name $workspaceName
-
 az extension add --name application-insights
-az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName `
-    --workspace "/subscriptions/c074675d-209c-429a-a95e-ea35b822e146/resourceGroups/fabmedical-rg-ltn/providers/Microsoft.OperationalInsights/workspaces/fabmedical-law-ltn" `
-    --application-type web | ConvertFrom-Json
-
+az monitor app-insights component create --app $appInsights --location $location2 --kind web -g $resourcegroupName --application-type web --retention-time 120
