@@ -27,7 +27,7 @@ stages:
                 additionalDockerComposeFiles: 'build.docker-compose.yml'
                 action: 'Push services'
                 additionalImageTags: '$(Build.BuildNumber)'
-                
+
   - stage: DeployProd
     jobs:
     - deployment: infrastructure
@@ -40,7 +40,7 @@ stages:
               - powershell: (gc .\docker-compose.yml) -replace ':latest',':$(Build.BuildNumber)' | set-content .\docker-compose.yml
               - task: AzureCLI@2
                 inputs:
-                  azureSubscription: 'Fabrikam'
+                  azureSubscription: 'Fabrikam-AZ'
                   scriptType: 'pscore'
                   scriptLocation: 'scriptPath'
                   scriptPath: './infrastructure/deploy-infrastructure.ps1'
