@@ -62,9 +62,7 @@ az monitor log-analytics workspace create --resource-group $resourcegroupName `
     --workspace-name $workspaceName
 
 az extension add --name application-insights
-$ai = az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName `
+az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName `
     --workspace "/subscriptions/c074675d-209c-429a-a95e-ea35b822e146/resourceGroups/fabmedical-rg-ltn/providers/Microsoft.OperationalInsights/workspaces/fabmedical-law-ltn" `
     --application-type web | ConvertFrom-Json
 
-$global:aiInstKey = $ai.instrumentationKey
-$aiConnectionString = $ai.connectionString
