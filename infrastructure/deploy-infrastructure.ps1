@@ -1,5 +1,10 @@
 #All  variables for infra build
-$studentsuffix = "lnt"
+
+param
+(
+    [string] $studentsuffix = "lnt"
+)
+
 $resourcegroupName = "fabmedical-rg-" + $studentsuffix
 $cosmosDBName = "fabmedical-cdb-" + $studentsuffix
 $webappName = "fabmedical-web-" + $studentsuffix
@@ -9,10 +14,10 @@ $appInsights = "fabmedical-ai-" + $studentsuffix
 $location1 = "westus3"
 $location2 = "eastus"
 
-#create the resource group
-az group create -l $location1 -n $resourcegroupName
+# Create a group
+$rg = az group create --name $resourcegroupName --location $location1 | ConvertFrom-Json
 
-#create the cosmosDB with 2 failover locations
+#Then create a CosmosDB
 az cosmosdb create --name $cosmosDBName `
 --resource-group $resourcegroupName `
 --locations regionName=$location1 failoverPriority=0 isZoneRedundant=False `
@@ -20,46 +25,30 @@ az cosmosdb create --name $cosmosDBName `
 --enable-multiple-write-locations `
 --kind MongoDB 
 
-
-#create the App Service Plan
+# Create an Azure App Service Plan
 az appservice plan create --name $planName --resource-group $resourcegroupName --sku S1 --is-linux
 
-#create the WebApp with nginx
-az webapp create --resource-group $resourcegroupName --plan $planName --name $webappName 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_URL="https://ghcr.io" --name $($webappName) --resource-group $($resourcegroupName) 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_USERNAME="notapplicable" --name $($webappName) --resource-group $($resourcegroupName) 
+az webapp config appsettings set --settings DOCKER_REGISTRY_SERVER_PASSWORD="$($env:CR_PAT)" --name $($webappName) --resource-group $($resourcegroupName)
 
-#create the WebApp with nginx
-az webapp create --resource-group $resourcegroupName `
---plan $planName --name $webappName -i nginx
+# Create an Azure Web App with NGINX container
+az webapp create `
+--multicontainer-config-file ./docker-compose.yml `
+--multicontainer-config-type COMPOSE `
+--resource-group $($resourcegroupName) `
+--plan $($planName) `
+--name $($webappName)
 
-#configure the webapp settings
+# Add container properties to Web App to pull from GitHub Container Registry images
 az webapp config container set `
---docker-registry-server-password $MY_PAT `
+--docker-registry-server-password $($env:CR_PAT) `
 --docker-registry-server-url https://ghcr.io `
 --docker-registry-server-user notapplicable `
---multicontainer-config-file ../docker-compose.yml `
+--multicontainer-config-file docker-compose.yml `
 --multicontainer-config-type COMPOSE `
---name $webappName `
---resource-group $resourcegroupName `
---enable-app-service-storage true
+--name $($webappName) `
+--resource-group $resourcegroupName 
 
-#setting up Application Insights
 az extension add --name application-insights
 az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName --application-type web --retention-time 120
-
-#Create the following: A log analytics workspace & app insights
-
-<# basic app insights is being deprecated in 2024. The west US 3 region doesn't even support the basic app insights, 
-only ones through a log analytics workspace. So to implement an app insights that won't be deprecated in a year (ish), 
-it was best to use the newer way of doing things.
-
-az monitor log-analytics workspace create --resource-group $resourcegroupName `
-    --workspace-name $workspaceName
-
-az extension add --name application-insights
-$ai = az monitor app-insights component create --app $appInsights --location $location1 --kind web -g $resourcegroupName `
-    --workspace "/subscriptions/c074675d-209c-429a-a95e-ea35b822e146/resourceGroups/fabmedical-rg-ltn/providers/Microsoft.OperationalInsights/workspaces/fabmedical-law-ltn" `
-    --application-type web | ConvertFrom-Json
-
-$global:aiInstKey = $ai.instrumentationKey
-$aiConnectionString = $ai.connectionString
-#>
