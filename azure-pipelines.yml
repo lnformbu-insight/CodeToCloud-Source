@@ -44,6 +44,6 @@ stages:
                   scriptType: 'pscore'
                   scriptLocation: 'scriptPath'
                   scriptPath: './infrastructure/deploy-infrastructure.ps1'
-                  arguments: 'jd504'
+                  arguments: 'lnt'
                 env:
                   CR_PAT: $(CR_PAT)
