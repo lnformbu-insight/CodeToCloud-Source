@@ -9,7 +9,7 @@ app.use(express.static(path.join(__dirname, 'dist/content-web')));
 const contentApiUrl = process.env.CONTENT_API_URL || "http://localhost:3001";
 
 const appInsights = require("applicationinsights");
-appInsights.setup("4ef8c97b-7572-478f-872d-c6d856ee835e");
+appInsights.setup("5b9b2c00-1409-4697-be43-4d0b9ebe51f8");
 appInsights.start();
 
 function getSessions(cb) {
