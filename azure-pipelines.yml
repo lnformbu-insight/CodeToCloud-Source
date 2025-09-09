@@ -47,3 +47,4 @@ stages:
                   arguments: 'lnt'
                 env:
                   CR_PAT: $(CR_PAT)
+                  
